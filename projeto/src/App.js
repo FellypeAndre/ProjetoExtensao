@@ -1,26 +1,28 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-// Importe suas páginas (componentes)
-import Reclamacoes from './Reclamacoes';
-import Relatorio from './components/Relatorio'; // Certifique-se de que o caminho está correto
-// Importe também Home e Mapa quando os criar
+// --- Páginas ---
+// Importa os componentes que funcionam como páginas completas da aplicação.
+import Reclamacoes from './pages/Reclamacoes';
+import Relatorio from './pages/Relatorio';
+// import Home from './pages/Home/Home'; // Descomente quando criar a página Home
+// import Mapa from './pages/Mapa/Mapa';   // Descomente quando criar a página Mapa
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* Rota para a página de Reclamações */}
-        <Route path="/Reclamacoes" element={<Reclamacoes />} />
+        <Route path="/reclamacoes" element={<Reclamacoes />} />
 
-        {/* Rota para a página de Relatório */}
-        <Route path="/form" element={<Relatorio />} />
+        {/* Rota para a página de Relatório/Formulário */}
+        <Route path="/formulario" element={<Relatorio />} />
 
-        {/* Adicione rotas para Home e Mapa aqui */}
+        {/* Rotas para futuras páginas */}
         {/* <Route path="/home" element={<Home />} /> */}
         {/* <Route path="/mapa" element={<Mapa />} /> */}
 
-        {/* Redireciona a rota inicial "/" para "/reclamacoes" */}
+        {/* Rota padrão: redireciona da raiz para a página de reclamações */}
         <Route path="/" element={<Navigate to="/reclamacoes" />} />
       </Routes>
     </Router>

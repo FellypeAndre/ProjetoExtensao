@@ -1,36 +1,49 @@
-import React, { useState } from 'react';
+// src/pages/Reclamacoes/Reclamacoes.js
+
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Reclamacoes.css';
-import logo from './components/logo_extensao.png';
+// CORREÇÃO 1: Corrigido o caminho para a pasta de assets
+import logo from '../../assets/images/logo_extensao.png';
 
-
+// Este dado virá de uma API no futuro.
 const reclamacoesMock = [
   { id: 1, texto: 'Rua Pedro Alvares Cabral com Arvores quebrada', status: 'pendente' },
   { id: 2, texto: 'Rua Estevão Pinheiro com buraco enorme', status: 'atendido' },
   { id: 3, texto: 'Em frente a escola fulano de tal caiu uma arvore', status: 'pendente' },
-  { id: 4, texto: 'Rua Pedro Alvares Cabral com Arvores quebrada', status: 'atendido' },
-  { id: 5, texto: 'Rua Pedro Alvares Cabral com Arvores quebrada', status: 'pendente' }
 ];
 
 export default function Reclamacoes() {
+  // OTIMIZAÇÃO 2: Prepara o state para receber dados de uma API
+  const [reclamacoes, setReclamacoes] = useState([]);
   const [filtro, setFiltro] = useState('');
   const [busca, setBusca] = useState('');
 
-  const filtradas = reclamacoesMock.filter(r =>
+  // Hook para buscar os dados quando o componente for montado
+  useEffect(() => {
+    // Por enquanto, apenas carregamos os dados mockados.
+    // No futuro, aqui você faria a chamada para sua API.
+    // Ex: fetch('http://sua-api.com/reclamacoes').then(res => res.json()).then(data => setReclamacoes(data));
+    setReclamacoes(reclamacoesMock);
+  }, []); // O array vazio [] faz com que isso rode apenas uma vez.
+
+  // Lógica de filtro permanece, agora usando o state 'reclamacoes'
+  const filtradas = reclamacoes.filter(r =>
     r.texto.toLowerCase().includes(busca.toLowerCase()) &&
     (filtro === '' || r.status === filtro)
   );
 
   return (
     <div className="tela-reclamacoes">
+      {/* SUGESTÃO: Este header deveria ser um componente reutilizável */}
       <header className="header">
-        <img src={logo} alt="Logo Ponta Porã" className="logo" />
-
+        <img src={logo} alt="Logo" className="logo" />
         <nav className="navbar">
           <Link to="/">Home</Link>
           <Link to="/mapa">Mapa</Link>
           <Link to="/reclamacoes">Reclamações</Link>
-          <Link to="/relatorios">Relatórios</Link>
+          {/* CORREÇÃO 2: Rota ajustada para ser consistente com App.js */}
+          <Link to="/formulario">Relatórios</Link>
         </nav>
         <button className="btn-sair">Sair</button>
       </header>
@@ -39,7 +52,7 @@ export default function Reclamacoes() {
         <div className="filtro-container">
           <input
             type="text"
-            placeholder="Digite aqui... Ex: Rua pedro alves 857"
+            placeholder="Digite para buscar uma reclamação..."
             className="input-busca"
             value={busca}
             onChange={e => setBusca(e.target.value)}
@@ -67,13 +80,9 @@ export default function Reclamacoes() {
             </div>
           ))}
         </div>
-
-       
       </div>
 
-      <footer className="footer">
-        <img src={logo} alt="Logo Ponta Porã" className="logo-footer" />
-      </footer>
+       
     </div>
   );
 }
