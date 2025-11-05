@@ -1,25 +1,32 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-// --- CORREÇÃO NOS CAMINHOS ---
-// O './' no início significa "a partir desta mesma pasta" (no caso, a pasta 'src')
+// --- Páginas e Layouts ---
 import Layout from './components/Layout/Layout'; 
 import Reclamacoes from './pages/Reclamacoes/Reclamacoes';
-import Relatorio from './pages/Relatorio/Relatorio';
+// import Relatorio from './pages/Relatorio/Relatorio'; // Removido
+import Login from './pages/Login/Login';           
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* A rota principal agora renderiza o Layout */}
+        {/* ROTA PÚBLICA: A página de login fica fora do layout principal */}
+        <Route path="/login" element={<Login />} />
+
+        {/* ROTAS PROTEGIDAS: Usam o Layout com menu e rodapé */}
         <Route path="/" element={<Layout />}>
-          {/* As rotas filhas serão renderizadas dentro do <Outlet /> do Layout */}
-          {/* O redirect agora usa 'index' para a rota pai */}
-          <Route index element={<Navigate to="/reclamacoes" />} />
+          
+          {/* Rota da página de Reclamações */}
           <Route path="/reclamacoes" element={<Reclamacoes />} />
-          <Route path="/formulario" element={<Relatorio />} />
-          {/* Adicione outras rotas aqui, como /home e /mapa */}
+          
+          {/* Rota de Relatório removida */}
+          {/* <Route path="/formulario" element={<Relatorio />} /> */}
+          
+          {/* Rota padrão: redireciona da raiz para a página de login */}
+          <Route index element={<Navigate to="/login" />} /> 
         </Route>
+        
       </Routes>
     </Router>
   );

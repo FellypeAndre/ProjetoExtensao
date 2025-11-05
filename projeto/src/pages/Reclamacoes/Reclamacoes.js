@@ -1,82 +1,116 @@
-// src/pages/Reclamacoes/Reclamacoes.js
-
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import './Reclamacoes.css';
-// CORREÇÃO 1: Corrigido o caminho para a pasta de assets
-import logo from '../../assets/images/logo_extensao.png';
-
-// Este dado virá de uma API no futuro.
-const reclamacoesMock = [
-  { id: 1, texto: 'Rua Pedro Alvares Cabral com Arvores quebrada', status: 'pendente' },
-  { id: 2, texto: 'Rua Estevão Pinheiro com buraco enorme', status: 'atendido' },
-  { id: 3, texto: 'Em frente a escola fulano de tal caiu uma arvore', status: 'pendente' },
-  { id: 4, texto: 'Em frente a escola fulano de tal caiu uma arvore', status: 'atendido' },
-  { id: 5, texto: 'teste', status: 'pendente' },
-  { id: 6, texto: 'teaaaaaaaaaaaaaaaaaate', status: 'pendente' },
-  { id: 7, texto: 'opaaaaaaaaaa', status: 'pendente' },
-];
+// 1. REMOVIDO: O import do ReclamacaoForm não é mais necessário
+// import ReclamacaoForm from '../../components/ReclamacaoForm/ReclamacaoForm';
 
 export default function Reclamacoes() {
-  // OTIMIZAÇÃO 2: Prepara o state para receber dados de uma API
+  // States para a lista
   const [reclamacoes, setReclamacoes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // States para os filtros
   const [filtro, setFiltro] = useState('');
   const [busca, setBusca] = useState('');
 
-  // Hook para buscar os dados quando o componente for montado
-  useEffect(() => {
-    // Por enquanto, apenas carregamos os dados mockados.
-    // No futuro, aqui você faria a chamada para sua API.
-    // Ex: fetch('http://sua-api.com/reclamacoes').then(res => res.json()).then(data => setReclamacoes(data));
-    setReclamacoes(reclamacoesMock);
-  }, []); // O array vazio [] faz com que isso rode apenas uma vez.
+  // Função para buscar os dados da API
+  const fetchReclamacoes = () => {
+    setLoading(true);
+    setError(null);
+    
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      setError('Você não está logado. Por favor, faça o login primeiro.');
+      setLoading(false);
+      return;
+    }
 
-  // Lógica de filtro permanece, agora usando o state 'reclamacoes'
+    const apiUrl = 'http://localhost:8080/solicitacoes'; // URL da API de Reclamações
+
+    fetch(apiUrl, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Falha ao buscar dados. Verifique seu token ou a API.');
+        }
+        return res.json();
+      })
+      .then(data => {
+        setReclamacoes(data);
+      })
+      .catch(err => {
+        setError(err.message);
+        console.error("Erro ao buscar reclamações:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  // Buscar dados ao carregar a página pela primeira vez
+  useEffect(() => {
+    fetchReclamacoes();
+  }, []); // O array vazio [] garante que rode apenas uma vez.
+
+  // 2. REMOVIDO: A função handleFormSuccess não é mais necessária
+
+  // Lógica de filtro (ajuste 'r.problema' se o nome do campo for outro)
   const filtradas = reclamacoes.filter(r =>
-    r.texto.toLowerCase().includes(busca.toLowerCase()) &&
+    (r.problema && r.problema.toLowerCase().includes(busca.toLowerCase())) &&
     (filtro === '' || r.status === filtro)
   );
 
   return (
+    // 3. A classe 'tela-reclamacoes' será nosso container principal
+    //    para controlar o layout estático e a rolagem
     <div className="tela-reclamacoes">
-      {/* SUGESTÃO: Este header deveria ser um componente reutilizável */}
       
+      {/* 4. REMOVIDO: O <ReclamacaoForm /> e o <hr /> foram excluídos */}
 
-      <div className="main-content">
-        <div className="filtro-container">
-          <input
-            type="text"
-            placeholder="Digite para buscar uma reclamação..."
-            className="input-busca"
-            value={busca}
-            onChange={e => setBusca(e.target.value)}
-          />
-          <div className="filtro-wrapper">
-            <span>Filtrar por</span>
-            <select className="select-filtro" value={filtro} onChange={e => setFiltro(e.target.value)}>
-              <option value="">Todos</option>
-              <option value="pendente">Pendente</option>
-              <option value="atendido">Atendido</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="lista-reclamacoes">
-          {filtradas.map(rec => (
-            <div key={rec.id} className="reclamacao-item">
-              <span className="reclamacao-texto">{rec.texto}</span>
-              <div className="reclamacao-acoes">
-                <button className="reclamacao-icon"></button>
-                <span className={`reclamacao-status status-${rec.status}`}>
-                  {rec.status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* 5. O filtro agora é a parte estática superior */}
+      <div className="filtro-container">
+        <input
+          type="text"
+          placeholder="Buscar por descrição..."
+          className="input-busca"
+          value={busca}
+          onChange={e => setBusca(e.target.value)}
+        />
+        <select className="select-filtro" value={filtro} onChange={e => setFiltro(e.target.value)}>
+          <option value="">Todos</option>
+          <option value="pendente">Pendente</option>
+          <option value="atendido">Atendido</option>
+          {/* Adicione outros status se necessário */}
+        </select>
       </div>
 
-       
+      {/* 6. Este wrapper vai conter a lista e permitir a rolagem */}
+      <div className="lista-wrapper">
+        {loading && <div className="loading-message">Carregando reclamações...</div>}
+        {error && <div className="error-message">{error}</div>}
+        
+        {!loading && !error && (
+          <div className="lista-reclamacoes">
+            {filtradas.length === 0 ? (
+              <div className="reclamacao-vazia">Nenhuma reclamação encontrada.</div>
+            ) : (
+              filtradas.map(rec => (
+                <div key={rec.id} className="reclamacao-item">
+                  <span className="reclamacao-texto">{rec.problema || 'Sem descrição'}</span>
+                  <div className="reclamacao-acoes">
+                    <button className="reclamacao-icon"></button>
+                    <span className={`reclamacao-status status-${rec.status}`}>
+                      {rec.status}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
