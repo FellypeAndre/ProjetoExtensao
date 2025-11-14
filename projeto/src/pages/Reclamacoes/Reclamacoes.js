@@ -80,8 +80,9 @@ export default function Reclamacoes() {
         />
         <select className="select-filtro" value={filtro} onChange={e => setFiltro(e.target.value)}>
           <option value="">Todos</option>
-          <option value="pendente">Pendente</option>
-          <option value="atendido">Atendido</option>
+          <option value="PENDENTE">Pendente</option>
+          <option value="EM_ANDAMENTO">Em Andamento</option>
+          <option value="ATENDIDO">Atendido</option>
           {/* Adicione outros status se necessário */}
         </select>
       </div>

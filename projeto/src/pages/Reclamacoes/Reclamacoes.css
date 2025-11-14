@@ -153,12 +153,16 @@ body {
   font-size: 14px;
 }
 
-.status-pendente {
+.status-PENDENTE   {
   background-color: #e63946;
   color: white;
 }
+.status-EM_ANDAMENTO {
+  background-color: #f4a261; /* laranja */
+  color: rgb(255, 255, 255); /* opcional, melhora a leitura */
+}
 
-.status-atendido {
+.status-ATENDIDO {
   background-color: #2a9d2e;
   color: white;
 }
